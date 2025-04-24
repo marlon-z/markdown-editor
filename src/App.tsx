@@ -32,7 +32,7 @@ import SEOLandingPage from './components/SEOLandingPage';
 
 // 使用React.lazy懒加载非关键路径组件
 const LazyMarkdownGuide = lazy(() => import('./components/MarkdownGuide'));
-const LazyWechatStyle = lazy(() => import('./components/WechatStyle.jsx'));
+const LazyWechatStyle = lazy(() => import('./components/WechatStyle'));
 const LazyAboutPage = lazy(() => import('./components/AboutPage'));
 
 const { Header, Content, Sider } = Layout;
