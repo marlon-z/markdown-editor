@@ -679,6 +679,7 @@ interface Translation {
   renderSettings: string;
   closeSettings: string;
   copyContent: string;
+  copyToWechat: string; // 添加复制到微信字段
   light: string;
   dark: string;
   fontSize: string;
@@ -700,6 +701,8 @@ interface Translation {
   emptyTitleWarning: string;
   copySuccess: string;
   copyError: string;
+  copyToWechatSuccess: string; // 添加复制到微信成功提示
+  copyToWechatError: string; // 添加复制到微信失败提示
   saveSuccess: string;
   deleteSuccess: string;
   placeholder: string;
@@ -830,6 +833,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: '渲染设置',
     closeSettings: '关闭设置',
     copyContent: '复制内容',
+    copyToWechat: '复制到微信',
     light: '浅色',
     dark: '深色',
     fontSize: '字体大小',
@@ -851,6 +855,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: '标题不能为空',
     copySuccess: '复制成功',
     copyError: '复制失败',
+    copyToWechatSuccess: '已优化格式并复制到剪贴板，可直接粘贴到微信公众号',
+    copyToWechatError: '复制到微信失败',
     saveSuccess: '保存成功',
     deleteSuccess: '删除成功',
     placeholder: '在这里输入 Markdown 文本...',
@@ -1013,6 +1019,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Render Settings',
     closeSettings: 'Close Settings',
     copyContent: 'Copy Content',
+    copyToWechat: 'Copy to WeChat',
     light: 'Light',
     dark: 'Dark',
     fontSize: 'Font Size',
@@ -1034,6 +1041,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'Title cannot be empty',
     copySuccess: 'Copied successfully',
     copyError: 'Copy failed',
+    copyToWechatSuccess: 'Copied to WeChat successfully',
+    copyToWechatError: 'Failed to copy to WeChat',
     saveSuccess: 'Saved successfully',
     deleteSuccess: 'Deleted successfully',
     placeholder: 'Enter your Markdown text here...',
@@ -1196,6 +1205,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Configuración de renderizado',
     closeSettings: 'Cerrar configuración',
     copyContent: 'Contenido copiado',
+    copyToWechat: 'Copiar a WeChat',
     light: 'Claro',
     dark: 'Oscuro',
     fontSize: 'Tamaño de fuente',
@@ -1217,6 +1227,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'El título no puede estar vacío',
     copySuccess: 'Copiado correctamente',
     copyError: 'Error al copiar',
+    copyToWechatSuccess: 'Copiado a WeChat correctamente',
+    copyToWechatError: 'Error al copiar a WeChat',
     saveSuccess: 'Guardado correctamente',
     deleteSuccess: 'Eliminado correctamente',
     placeholder: 'Escribe tu texto Markdown aquí...',
@@ -1379,6 +1391,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Paramètres de rendu',
     closeSettings: 'Fermer les paramètres',
     copyContent: 'Contenu copié',
+    copyToWechat: 'Copier vers WeChat',
     light: 'Clair',
     dark: 'Sombre',
     fontSize: 'Taille de police',
@@ -1400,6 +1413,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'Le titre ne peut pas être vide',
     copySuccess: 'Copié avec succès',
     copyError: 'Échec de la copie',
+    copyToWechatSuccess: 'Copié vers WeChat avec succès',
+    copyToWechatError: 'Échec de la copie vers WeChat',
     saveSuccess: 'Sauvegardé avec succès',
     deleteSuccess: 'Supprimé avec succès',
     placeholder: 'Entrez votre texte Markdown ici...',
@@ -1562,6 +1577,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Render Einstellungen',
     closeSettings: 'Einstellungen schließen',
     copyContent: 'Inhalt kopieren',
+    copyToWechat: 'Inhalt nach WeChat kopieren',
     light: 'Hell',
     dark: 'Dunkel',
     fontSize: 'Schriftgröße',
@@ -1583,6 +1599,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'Der Titel darf nicht leer sein',
     copySuccess: 'Inhalt erfolgreich kopiert',
     copyError: 'Fehler beim Kopieren',
+    copyToWechatSuccess: 'Inhalt erfolgreich nach WeChat kopiert',
+    copyToWechatError: 'Fehler beim Kopieren nach WeChat',
     saveSuccess: 'Inhalt erfolgreich gespeichert',
     deleteSuccess: 'Inhalt erfolgreich gelöscht',
     placeholder: 'Geben Sie hier Ihren Markdown-Text ein...',
@@ -1745,6 +1763,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Configurações de renderização',
     closeSettings: 'Fechar configurações',
     copyContent: 'Conteúdo copiado',
+    copyToWechat: 'Copiar para WeChat',
     light: 'Claro',
     dark: 'Escuro',
     fontSize: 'Tamanho da fonte',
@@ -1766,6 +1785,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'O título não pode estar vazio',
     copySuccess: 'Conteúdo copiado com sucesso',
     copyError: 'Erro ao copiar',
+    copyToWechatSuccess: 'Conteúdo copiado para WeChat com sucesso',
+    copyToWechatError: 'Erro ao copiar para WeChat',
     saveSuccess: 'Conteúdo salvo com sucesso',
     deleteSuccess: 'Conteúdo excluído com sucesso',
     placeholder: 'Digite seu texto Markdown aquí...',
@@ -1928,6 +1949,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'Настройки рендеринга',
     closeSettings: 'Закрыть настройки',
     copyContent: 'Копировать содержимое',
+    copyToWechat: 'Копировать содержимое в WeChat',
     light: 'Светлый',
     dark: 'Темный',
     fontSize: 'Размер шрифта',
@@ -1949,6 +1971,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'Заголовок не может быть пустым',
     copySuccess: 'Содержимое успешно скопировано',
     copyError: 'Ошибка при копировании',
+    copyToWechatSuccess: 'Содержимое успешно скопировано в WeChat',
+    copyToWechatError: 'Ошибка при копировании в WeChat',
     saveSuccess: 'Содержимое успешно сохранено',
     deleteSuccess: 'Содержимое успешно удалено',
     placeholder: 'Введите ваш текст Markdown здесь...',
@@ -2111,6 +2135,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'إعدادات التقديم',
     closeSettings: 'إغلاق الإعدادات',
     copyContent: 'نسخ المحتوى',
+    copyToWechat: 'نسخ المحتوى إلى WeChat',
     light: 'فاتح',
     dark: 'داكن',
     fontSize: 'حجم الخط',
@@ -2132,6 +2157,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'لا يمكن أن يكون العنوان فارغًا',
     copySuccess: 'تم نسخ المحتوى بنجاح',
     copyError: 'فشل النسخ',
+    copyToWechatSuccess: 'تم نسخ المحتوى إلى WeChat بنجاح',
+    copyToWechatError: 'فشل نسخ المحتوى إلى WeChat',
     saveSuccess: 'تم حفظ المحتوى بنجاح',
     deleteSuccess: 'تم حذف المحتوى بنجاح',
     placeholder: 'أدخل نص Markdown هنا...',
@@ -2294,6 +2321,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'रेंडर सेटिंग्स',
     closeSettings: 'सेटिंग्स बंद करें',
     copyContent: 'सामग्री कॉपी करें',
+    copyToWechat: 'सामग्री कॉपी करें और WeChat पर भेजें',
     light: 'छाँव',
     dark: 'गहरा',
     fontSize: 'फ़ॉन्ट साइज़',
@@ -2315,6 +2343,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'शीर्षक खाली नहीं हो सकता',
     copySuccess: 'सामग्री सफलतापूर्वक कॉपी कर ली गई',
     copyError: 'कॉपी में विफलता',
+    copyToWechatSuccess: 'सामग्री सफलतापूर्वक WeChat पर भेज गई',
+    copyToWechatError: 'WeChat पर भेजने में विफलता',
     saveSuccess: 'सामग्री सफलतापूर्वक सहेज गई',
     deleteSuccess: 'सामग्री सफलतापूर्वक हटाई गई',
     placeholder: 'यहाँ आपका Markdown टेक्स्ट दर्ज करें...',
@@ -2477,6 +2507,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: '렌더링 설정',
     closeSettings: '설정 닫기',
     copyContent: '복사된 내용',
+    copyToWechat: '복사된 내용을 WeChat으로 복사',
     light: '밝은',
     dark: '어두운',
     fontSize: '글꼴 크기',
@@ -2498,6 +2529,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: '제목을 비워둘 수 없습니다',
     copySuccess: '내용이 성공적으로 복사되었습니다',
     copyError: '복사 실패',
+    copyToWechatSuccess: '내용이 WeChat으로 성공적으로 복사되었습니다',
+    copyToWechatError: 'WeChat으로 복사하는 데 실패했습니다',
     saveSuccess: '내용이 성공적으로 저장되었습니다',
     deleteSuccess: '내용이 성공적으로 삭제되었습니다',
     placeholder: '여기에 마크다운 텍스트를 입력하세요...',
@@ -2660,6 +2693,7 @@ const translations: Record<LocaleType, Translation> = {
     renderSettings: 'レンダリング設定',
     closeSettings: '設定を閉じる',
     copyContent: '内容をコピー',
+    copyToWechat: '内容をWeChatにコピー',
     light: 'ライト',
     dark: 'ダーク',
     fontSize: 'フォントサイズ',
@@ -2681,6 +2715,8 @@ const translations: Record<LocaleType, Translation> = {
     emptyTitleWarning: 'タイトルを空にすることはできません',
     copySuccess: 'コピーしました',
     copyError: 'コピーに失敗しました',
+    copyToWechatSuccess: '内容がWeChatにコピーされました',
+    copyToWechatError: 'WeChatにコピーに失敗しました',
     saveSuccess: '保存しました',
     deleteSuccess: '削除しました',
     placeholder: 'ここにMarkdownテキストを入力...',
@@ -3168,6 +3204,112 @@ const MainApp: React.FC<{
       message.success(t(locale, 'copySuccess'));
     } catch (err) {
       message.error(t(locale, 'copyError'));
+    }
+  };
+
+  // 添加复制到微信功能
+  const copyToWechat = async () => {
+    try {
+      const editorContent = document.querySelector('.w-md-editor-preview');
+      if (!editorContent) {
+        throw new Error('Preview content not found');
+      }
+      
+      // 保存原始渲染样式
+      const originalStyle = settings.renderStyle;
+      
+      // 临时切换到微信样式（如果当前不是）
+      if (originalStyle !== 'wechat') {
+        // 暂时改变DOM以适应微信样式
+        const previewElement = editorContent.parentElement;
+        if (previewElement) {
+          previewElement.classList.remove(originalStyle);
+          previewElement.classList.add('wechat');
+        }
+      }
+      
+      // 微信特定处理：优化代码块和表格格式
+      const codeBlocks = editorContent.querySelectorAll('pre');
+      const originalCodeStyles: Array<{element: HTMLElement, style: string}> = [];
+      
+      // 临时增强代码块样式
+      codeBlocks.forEach((block) => {
+        originalCodeStyles.push({
+          element: block as HTMLElement,
+          style: block.getAttribute('style') || ''
+        });
+        
+        // 增加微信风格的边框和背景
+        block.setAttribute('style', 'background-color: #f8f8f8; border-radius: 5px; padding: 10px; border: 1px solid #e8e8e8; margin: 10px 0;');
+      });
+      
+      // 处理表格，增加边框
+      const tables = editorContent.querySelectorAll('table');
+      const originalTableStyles: Array<{element: HTMLElement, style: string}> = [];
+      
+      tables.forEach((table) => {
+        originalTableStyles.push({
+          element: table as HTMLElement,
+          style: table.getAttribute('style') || ''
+        });
+        
+        // 增加微信风格的表格样式
+        table.setAttribute('style', 'border-collapse: collapse; width: 100%; margin: 15px 0;');
+        
+        // 处理表格单元格
+        const cells = table.querySelectorAll('th, td');
+        cells.forEach((cell) => {
+          const originalCellStyle = cell.getAttribute('style') || '';
+          cell.setAttribute('data-original-style', originalCellStyle);
+          cell.setAttribute('style', 'border: 1px solid #d9d9d9; padding: 8px; text-align: left;');
+        });
+      });
+      
+      // 创建一个临时的选区
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(editorContent);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      
+      // 执行复制命令
+      document.execCommand('copy');
+      
+      // 清除选区
+      selection?.removeAllRanges();
+
+      // 恢复原始代码块样式
+      originalCodeStyles.forEach((item) => {
+        item.element.setAttribute('style', item.style);
+      });
+      
+      // 恢复原始表格样式
+      originalTableStyles.forEach((item) => {
+        item.element.setAttribute('style', item.style);
+      });
+      
+      // 恢复表格单元格样式
+      const allCells = editorContent.querySelectorAll('th, td');
+      allCells.forEach((cell) => {
+        const originalStyle = cell.getAttribute('data-original-style');
+        if (originalStyle !== null) {
+          cell.setAttribute('style', originalStyle);
+          cell.removeAttribute('data-original-style');
+        }
+      });
+
+      // 恢复原始样式（如果做了临时更改）
+      if (originalStyle !== 'wechat') {
+        const previewElement = editorContent.parentElement;
+        if (previewElement) {
+          previewElement.classList.remove('wechat');
+          previewElement.classList.add(originalStyle);
+        }
+      }
+      
+      message.success(t(locale, 'copyToWechatSuccess'));
+    } catch (err) {
+      message.error(t(locale, 'copyToWechatError'));
     }
   };
 
@@ -3705,6 +3847,20 @@ const MainApp: React.FC<{
                   {t(locale, 'copyContent')}
                 </Button>
                 <Button
+                  type="primary"
+                  icon={
+                    <span className="anticon">
+                      <svg viewBox="64 64 896 896" focusable="false" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                        <path d="M690.1 377.4c5.9 0 11.8.2 17.6.5-24.4-128.7-158.3-227.1-319.9-227.1C209 150.8 64 271.4 64 420.2c0 81.1 43.6 154.2 111.9 203.6a21.5 21.5 0 0 1 9.1 17.6c0 2.4-.5 4.6-1.1 6.9-5.5 20.3-14.2 52.8-14.6 54.3-.7 2.6-1.7 5.2-1.7 7.9 0 5.9 4.8 10.8 10.8 10.8 2.3 0 4.2-.9 6.2-2l70.9-40.9c5.3-3.1 11-5 17.2-5 3.2 0 6.4.5 9.5 1.4 33.1 9.5 68.8 14.8 105.7 14.8 6 0 11.9-.1 17.8-.4-7.1-21-10.9-43.1-10.9-66 0-135.8 132.2-245.8 295.3-245.8zm-194.3-86.5c23.8 0 43.2 19.3 43.2 43.1s-19.3 43.1-43.2 43.1c-23.8 0-43.2-19.3-43.2-43.1s19.4-43.1 43.2-43.1zm-215.9 86.2c-23.8 0-43.2-19.3-43.2-43.1s19.3-43.1 43.2-43.1 43.2 19.3 43.2 43.1-19.4 43.1-43.2 43.1zm586.8 415.6c56.9-41.2 93.2-102 93.2-169.7 0-124-120.8-224.5-269.9-224.5-149 0-269.9 100.5-269.9 224.5S540.9 847.5 690 847.5c30.8 0 60.6-4.4 88.1-12.3 2.6-.8 5.2-1.2 7.9-1.2 5.2 0 9.9 1.6 14.3 4.1l59.1 34c1.7 1 3.3 1.7 5.2 1.7a9 9 0 0 0 6.4-2.6 9 9 0 0 0 2.6-6.4c0-2.2-.9-4.4-1.4-6.6-.3-1.2-7.6-28.3-12.2-45.3-.5-1.9-.9-3.8-.9-5.7.1-5.9 3.1-11.2 7.6-14.5zM600.2 587.2c-19.9 0-36-16.1-36-35.9 0-19.8 16.1-35.9 36-35.9s36 16.1 36 35.9c0 19.8-16.2 35.9-36 35.9zm179.9 0c-19.9 0-36-16.1-36-35.9 0-19.8 16.1-35.9 36-35.9s36 16.1 36 35.9a36.08 36.08 0 0 1-36 35.9z" />
+                      </svg>
+                    </span>
+                  }
+                  onClick={copyToWechat}
+                  style={{ background: '#07C160', borderColor: '#07C160' }}
+                >
+                  {t(locale, 'copyToWechat')}
+                </Button>
+                <Button
                   type="text"
                   icon={React.createElement(SettingOutlined)}
                   onClick={() => setSettingsOpen(!settingsOpen)}
@@ -3869,6 +4025,24 @@ const MainApp: React.FC<{
                       ),
                       execute: () => {
                         copyToClipboard();
+                      },
+                    },
+                    {
+                      name: 'copyToWechat',
+                      keyCommand: 'copyToWechat',
+                      buttonProps: { 
+                        'aria-label': t(locale, 'copyToWechat'),
+                        title: t(locale, 'copyToWechat')
+                      },
+                      icon: (
+                        <span className="anticon">
+                          <svg viewBox="64 64 896 896" focusable="false" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                            <path d="M690.1 377.4c5.9 0 11.8.2 17.6.5-24.4-128.7-158.3-227.1-319.9-227.1C209 150.8 64 271.4 64 420.2c0 81.1 43.6 154.2 111.9 203.6a21.5 21.5 0 0 1 9.1 17.6c0 2.4-.5 4.6-1.1 6.9-5.5 20.3-14.2 52.8-14.6 54.3-.7 2.6-1.7 5.2-1.7 7.9 0 5.9 4.8 10.8 10.8 10.8 2.3 0 4.2-.9 6.2-2l70.9-40.9c5.3-3.1 11-5 17.2-5 3.2 0 6.4.5 9.5 1.4 33.1 9.5 68.8 14.8 105.7 14.8 6 0 11.9-.1 17.8-.4-7.1-21-10.9-43.1-10.9-66 0-135.8 132.2-245.8 295.3-245.8zm-194.3-86.5c23.8 0 43.2 19.3 43.2 43.1s-19.3 43.1-43.2 43.1c-23.8 0-43.2-19.3-43.2-43.1s19.4-43.1 43.2-43.1zm-215.9 86.2c-23.8 0-43.2-19.3-43.2-43.1s19.3-43.1 43.2-43.1 43.2 19.3 43.2 43.1-19.4 43.1-43.2 43.1zm586.8 415.6c56.9-41.2 93.2-102 93.2-169.7 0-124-120.8-224.5-269.9-224.5-149 0-269.9 100.5-269.9 224.5S540.9 847.5 690 847.5c30.8 0 60.6-4.4 88.1-12.3 2.6-.8 5.2-1.2 7.9-1.2 5.2 0 9.9 1.6 14.3 4.1l59.1 34c1.7 1 3.3 1.7 5.2 1.7a9 9 0 0 0 6.4-2.6 9 9 0 0 0 2.6-6.4c0-2.2-.9-4.4-1.4-6.6-.3-1.2-7.6-28.3-12.2-45.3-.5-1.9-.9-3.8-.9-5.7.1-5.9 3.1-11.2 7.6-14.5zM600.2 587.2c-19.9 0-36-16.1-36-35.9 0-19.8 16.1-35.9 36-35.9s36 16.1 36 35.9c0 19.8-16.2 35.9-36 35.9zm179.9 0c-19.9 0-36-16.1-36-35.9 0-19.8 16.1-35.9 36-35.9s36 16.1 36 35.9a36.08 36.08 0 0 1-36 35.9z" />
+                          </svg>
+                        </span>
+                      ),
+                      execute: () => {
+                        copyToWechat();
                       },
                     },
                   ]}
