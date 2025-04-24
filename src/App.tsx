@@ -3210,17 +3210,26 @@ const MainApp: React.FC<{
   // 添加复制到微信功能
   const copyToWechat = async () => {
     // 回退复制方法函数定义
-    function fallbackCopy(contentClone: HTMLElement) {
+    function fallbackCopy(htmlContent: string) {
       try {
+        // 创建临时元素来保存HTML内容
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = htmlContent;
+        document.body.appendChild(tempElement);
+        
         // 选择要复制的内容
         const selection = window.getSelection();
         const range = document.createRange();
-        range.selectNodeContents(contentClone);
+        range.selectNodeContents(tempElement);
         selection?.removeAllRanges();
         selection?.addRange(range);
         
         // 执行复制命令
         const successful = document.execCommand('copy');
+        
+        // 清理
+        document.body.removeChild(tempElement);
+        
         if (successful) {
           message.success(t(locale, 'copyToWechatSuccess'));
         } else {
@@ -3241,17 +3250,48 @@ const MainApp: React.FC<{
         throw new Error('Preview content not found');
       }
       
-      // 克隆内容以避免修改原始DOM
+      // 克隆内容
       const contentClone = editorContent.cloneNode(true) as HTMLElement;
       
-      // 保存原始渲染样式
-      const originalStyle = settings.renderStyle;
-      
-      // 如果当前不是微信样式，应用微信样式类
-      if (originalStyle !== 'wechat') {
-        contentClone.classList.remove(originalStyle);
-        contentClone.classList.add('wechat');
-      }
+      // 处理标题样式
+      const headings = contentClone.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headings.forEach((heading) => {
+        const tag = heading.tagName.toLowerCase();
+        const element = heading as HTMLElement;
+        
+        // 针对不同级别标题应用特定样式
+        if (tag === 'h1') {
+          element.style.fontSize = '2em';
+          element.style.fontWeight = 'bold';
+          element.style.textAlign = 'center';
+          element.style.margin = '1em 0';
+          element.style.color = '#333333';
+        } else if (tag === 'h2') {
+          element.style.fontSize = '1.6em';
+          element.style.fontWeight = 'normal';
+          element.style.textAlign = 'center';
+          element.style.margin = '1.2em auto';
+          element.style.padding = '0 1em 0.5em';
+          element.style.borderBottom = '2px solid #07c160';
+          element.style.color = '#333333';
+          element.style.display = 'table';
+          element.style.marginLeft = 'auto';
+          element.style.marginRight = 'auto';
+        } else if (tag === 'h3') {
+          element.style.fontSize = '1.4em';
+          element.style.fontWeight = 'normal';
+          element.style.textAlign = 'left';
+          element.style.margin = '1em 0';
+          element.style.padding = '0 0 0 0.5em';
+          element.style.borderLeft = '4px solid #07c160';
+          element.style.color = '#333333';
+        } else if (tag === 'h4') {
+          element.style.fontSize = '1.2em';
+          element.style.fontWeight = 'normal';
+          element.style.color = '#07c160';
+          element.style.margin = '1em 0';
+        }
+      });
       
       // 微信特定处理：优化代码块和表格格式
       const codeBlocks = contentClone.querySelectorAll('pre');
@@ -3279,18 +3319,39 @@ const MainApp: React.FC<{
         });
       });
       
-      // 创建一个不可见的容器
-      const container = document.createElement('div');
-      container.appendChild(contentClone);
-      container.style.position = 'fixed';
-      container.style.top = '-9999px';
-      container.style.left = '-9999px';
-      document.body.appendChild(container);
+      // 处理引用块
+      const blockquotes = contentClone.querySelectorAll('blockquote');
+      blockquotes.forEach((blockquote) => {
+        (blockquote as HTMLElement).style.margin = '1em 0';
+        (blockquote as HTMLElement).style.padding = '5px 1em';
+        (blockquote as HTMLElement).style.backgroundColor = '#f7f7f7';
+        (blockquote as HTMLElement).style.borderLeft = '4px solid #07c160';
+        (blockquote as HTMLElement).style.color = '#8b8b8b';
+      });
+      
+      // 处理链接
+      const links = contentClone.querySelectorAll('a');
+      links.forEach((link) => {
+        (link as HTMLElement).style.color = '#07c160';
+        (link as HTMLElement).style.textDecoration = 'none';
+      });
+      
+      // 处理图片
+      const images = contentClone.querySelectorAll('img');
+      images.forEach((image) => {
+        (image as HTMLElement).style.maxWidth = '100%';
+        (image as HTMLElement).style.display = 'block';
+        (image as HTMLElement).style.margin = '1.5em auto';
+        (image as HTMLElement).style.borderRadius = '5px';
+      });
+      
+      // 获取完整的HTML
+      const htmlContent = contentClone.innerHTML;
       
       // 尝试使用现代Clipboard API (支持Firefox)
       if (navigator.clipboard && navigator.clipboard.write) {
         try {
-          const htmlBlob = new Blob([container.innerHTML], { type: 'text/html' });
+          const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
           const textBlob = new Blob([contentClone.textContent || ''], { type: 'text/plain' });
           
           const clipboardItem = new (window as any).ClipboardItem({
@@ -3302,15 +3363,12 @@ const MainApp: React.FC<{
           message.success(t(locale, 'copyToWechatSuccess'));
         } catch (clipboardError) {
           // 如果现代API失败，回退到旧方法
-          fallbackCopy(contentClone);
+          fallbackCopy(htmlContent);
         }
       } else {
         // 回退到旧方法
-        fallbackCopy(contentClone);
+        fallbackCopy(htmlContent);
       }
-      
-      // 清理
-      document.body.removeChild(container);
       
     } catch (err) {
       console.error('Copy to WeChat failed:', err);
