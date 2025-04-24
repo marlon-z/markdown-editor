@@ -3265,33 +3265,6 @@ const MainApp: React.FC<{
         });
       });
       
-      // 处理二级标题，用直接的HTML和CSS替代伪元素
-      const h2Elements = editorContent.querySelectorAll('h2');
-      const originalH2Styles: Array<{element: HTMLElement, style: string, html: string, classList: string}> = [];
-      
-      h2Elements.forEach((h2) => {
-        const h2Element = h2 as HTMLElement;
-        // 保存原始状态
-        originalH2Styles.push({
-          element: h2Element,
-          style: h2Element.getAttribute('style') || '',
-          html: h2Element.innerHTML,
-          classList: h2Element.className
-        });
-        
-        // 重置样式
-        h2Element.setAttribute('style', 'font-size: 1.6em; font-weight: normal; text-align: center; margin: 1.2em auto; padding: 0; color: #333; display: block; position: relative; width: auto;');
-        
-        // 创建带下划线的包装容器
-        const h2Text = h2Element.innerHTML;
-        h2Element.innerHTML = `
-          <span style="display: inline-block; position: relative; padding-bottom: 0.5em;">
-            ${h2Text}
-            <span style="content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background-color: ${settings.renderColor || '#00b96b'};"></span>
-          </span>
-        `;
-      });
-      
       // 创建一个临时的选区
       const selection = window.getSelection();
       const range = document.createRange();
@@ -3323,13 +3296,6 @@ const MainApp: React.FC<{
           cell.setAttribute('style', originalStyle);
           cell.removeAttribute('data-original-style');
         }
-      });
-      
-      // 恢复原始h2样式
-      originalH2Styles.forEach((item) => {
-        item.element.setAttribute('style', item.style);
-        item.element.innerHTML = item.html;
-        item.element.className = item.classList;
       });
 
       // 恢复原始样式（如果做了临时更改）

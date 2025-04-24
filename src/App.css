@@ -542,24 +542,11 @@ body {
   font-size: 1.6em;
   font-weight: normal;
   text-align: center;
-  margin: 1.2em 0;
-  padding: 0 0 0.5em;
-  border: none;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 1.2em auto;
+  padding: 0 1em 0.5em;
+  display: table;
+  border-bottom: 2px solid var(--md-color);
   color: #333 !important;
-}
-
-.w-md-editor-preview.wechat h2::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -0.5em;
-  right: -0.5em;
-  height: 2px;
-  background-color: var(--md-color);
 }
 
 /* 三级标题：不加粗、居左、带主题色左边框 */
@@ -761,8 +748,13 @@ body {
 
 .wechat h2 {
   font-size: 1.6em;
-  border-bottom: 1px solid var(--md-border-color);
-  padding-bottom: 0.3em;
+  font-weight: normal;
+  text-align: center;
+  margin: 1.2em auto;
+  padding: 0 1em 0.5em;
+  display: table;
+  border-bottom: 2px solid var(--md-color);
+  color: #333 !important;
 }
 
 .wechat h3 {
