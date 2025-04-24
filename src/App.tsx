@@ -3209,106 +3209,111 @@ const MainApp: React.FC<{
 
   // 添加复制到微信功能
   const copyToWechat = async () => {
+    // 回退复制方法函数定义
+    function fallbackCopy(contentClone: HTMLElement) {
+      try {
+        // 选择要复制的内容
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(contentClone);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        
+        // 执行复制命令
+        const successful = document.execCommand('copy');
+        if (successful) {
+          message.success(t(locale, 'copyToWechatSuccess'));
+        } else {
+          throw new Error('Copy command failed');
+        }
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+        message.error(t(locale, 'copyToWechatError'));
+      } finally {
+        // 清除选区
+        window.getSelection()?.removeAllRanges();
+      }
+    }
+
     try {
       const editorContent = document.querySelector('.w-md-editor-preview');
       if (!editorContent) {
         throw new Error('Preview content not found');
       }
       
+      // 克隆内容以避免修改原始DOM
+      const contentClone = editorContent.cloneNode(true) as HTMLElement;
+      
       // 保存原始渲染样式
       const originalStyle = settings.renderStyle;
       
-      // 临时切换到微信样式（如果当前不是）
+      // 如果当前不是微信样式，应用微信样式类
       if (originalStyle !== 'wechat') {
-        // 暂时改变DOM以适应微信样式
-        const previewElement = editorContent.parentElement;
-        if (previewElement) {
-          previewElement.classList.remove(originalStyle);
-          previewElement.classList.add('wechat');
-        }
+        contentClone.classList.remove(originalStyle);
+        contentClone.classList.add('wechat');
       }
       
       // 微信特定处理：优化代码块和表格格式
-      const codeBlocks = editorContent.querySelectorAll('pre');
-      const originalCodeStyles: Array<{element: HTMLElement, style: string}> = [];
-      
-      // 临时增强代码块样式
+      const codeBlocks = contentClone.querySelectorAll('pre');
       codeBlocks.forEach((block) => {
-        originalCodeStyles.push({
-          element: block as HTMLElement,
-          style: block.getAttribute('style') || ''
-        });
-        
-        // 增加微信风格的边框和背景
-        block.setAttribute('style', 'background-color: #f8f8f8; border-radius: 5px; padding: 10px; border: 1px solid #e8e8e8; margin: 10px 0;');
+        (block as HTMLElement).style.backgroundColor = '#f8f8f8';
+        (block as HTMLElement).style.borderRadius = '5px';
+        (block as HTMLElement).style.padding = '10px';
+        (block as HTMLElement).style.border = '1px solid #e8e8e8';
+        (block as HTMLElement).style.margin = '10px 0';
       });
       
       // 处理表格，增加边框
-      const tables = editorContent.querySelectorAll('table');
-      const originalTableStyles: Array<{element: HTMLElement, style: string}> = [];
-      
+      const tables = contentClone.querySelectorAll('table');
       tables.forEach((table) => {
-        originalTableStyles.push({
-          element: table as HTMLElement,
-          style: table.getAttribute('style') || ''
-        });
-        
-        // 增加微信风格的表格样式
-        table.setAttribute('style', 'border-collapse: collapse; width: 100%; margin: 15px 0;');
+        (table as HTMLElement).style.borderCollapse = 'collapse';
+        (table as HTMLElement).style.width = '100%';
+        (table as HTMLElement).style.margin = '15px 0';
         
         // 处理表格单元格
         const cells = table.querySelectorAll('th, td');
         cells.forEach((cell) => {
-          const originalCellStyle = cell.getAttribute('style') || '';
-          cell.setAttribute('data-original-style', originalCellStyle);
-          cell.setAttribute('style', 'border: 1px solid #d9d9d9; padding: 8px; text-align: left;');
+          (cell as HTMLElement).style.border = '1px solid #d9d9d9';
+          (cell as HTMLElement).style.padding = '8px';
+          (cell as HTMLElement).style.textAlign = 'left';
         });
       });
       
-      // 创建一个临时的选区
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(editorContent);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
+      // 创建一个不可见的容器
+      const container = document.createElement('div');
+      container.appendChild(contentClone);
+      container.style.position = 'fixed';
+      container.style.top = '-9999px';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
       
-      // 执行复制命令
-      document.execCommand('copy');
-      
-      // 清除选区
-      selection?.removeAllRanges();
-
-      // 恢复原始代码块样式
-      originalCodeStyles.forEach((item) => {
-        item.element.setAttribute('style', item.style);
-      });
-      
-      // 恢复原始表格样式
-      originalTableStyles.forEach((item) => {
-        item.element.setAttribute('style', item.style);
-      });
-      
-      // 恢复表格单元格样式
-      const allCells = editorContent.querySelectorAll('th, td');
-      allCells.forEach((cell) => {
-        const originalStyle = cell.getAttribute('data-original-style');
-        if (originalStyle !== null) {
-          cell.setAttribute('style', originalStyle);
-          cell.removeAttribute('data-original-style');
+      // 尝试使用现代Clipboard API (支持Firefox)
+      if (navigator.clipboard && navigator.clipboard.write) {
+        try {
+          const htmlBlob = new Blob([container.innerHTML], { type: 'text/html' });
+          const textBlob = new Blob([contentClone.textContent || ''], { type: 'text/plain' });
+          
+          const clipboardItem = new (window as any).ClipboardItem({
+            'text/html': htmlBlob,
+            'text/plain': textBlob
+          });
+          
+          await navigator.clipboard.write([clipboardItem]);
+          message.success(t(locale, 'copyToWechatSuccess'));
+        } catch (clipboardError) {
+          // 如果现代API失败，回退到旧方法
+          fallbackCopy(contentClone);
         }
-      });
-
-      // 恢复原始样式（如果做了临时更改）
-      if (originalStyle !== 'wechat') {
-        const previewElement = editorContent.parentElement;
-        if (previewElement) {
-          previewElement.classList.remove('wechat');
-          previewElement.classList.add(originalStyle);
-        }
+      } else {
+        // 回退到旧方法
+        fallbackCopy(contentClone);
       }
       
-      message.success(t(locale, 'copyToWechatSuccess'));
+      // 清理
+      document.body.removeChild(container);
+      
     } catch (err) {
+      console.error('Copy to WeChat failed:', err);
       message.error(t(locale, 'copyToWechatError'));
     }
   };
