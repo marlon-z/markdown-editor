@@ -3209,169 +3209,160 @@ const MainApp: React.FC<{
 
   // 添加复制到微信功能
   const copyToWechat = async () => {
-    // 回退复制方法函数定义
-    function fallbackCopy(htmlContent: string) {
-      try {
-        // 创建临时元素来保存HTML内容
-        const tempElement = document.createElement('div');
-        tempElement.innerHTML = htmlContent;
-        document.body.appendChild(tempElement);
-        
-        // 选择要复制的内容
-        const selection = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(tempElement);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-        
-        // 执行复制命令
-        const successful = document.execCommand('copy');
-        
-        // 清理
-        document.body.removeChild(tempElement);
-        
-        if (successful) {
-          message.success(t(locale, 'copyToWechatSuccess'));
-        } else {
-          throw new Error('Copy command failed');
-        }
-      } catch (err) {
-        console.error('Fallback copy failed:', err);
-        message.error(t(locale, 'copyToWechatError'));
-      } finally {
-        // 清除选区
-        window.getSelection()?.removeAllRanges();
-      }
-    }
-
     try {
       const editorContent = document.querySelector('.w-md-editor-preview');
       if (!editorContent) {
         throw new Error('Preview content not found');
       }
       
-      // 克隆内容
-      const contentClone = editorContent.cloneNode(true) as HTMLElement;
+      // 检测浏览器类型
+      const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
       
-      // 处理标题样式
-      const headings = contentClone.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      headings.forEach((heading) => {
-        const tag = heading.tagName.toLowerCase();
-        const element = heading as HTMLElement;
-        
-        // 针对不同级别标题应用特定样式
-        if (tag === 'h1') {
-          element.style.fontSize = '2em';
-          element.style.fontWeight = 'bold';
-          element.style.textAlign = 'center';
-          element.style.margin = '1em 0';
-          element.style.color = '#333333';
-        } else if (tag === 'h2') {
-          element.style.fontSize = '1.6em';
-          element.style.fontWeight = 'normal';
-          element.style.textAlign = 'center';
-          element.style.margin = '1.2em auto';
-          element.style.padding = '0 1em 0.5em';
-          element.style.borderBottom = '2px solid #07c160';
-          element.style.color = '#333333';
-          element.style.display = 'table';
-          element.style.marginLeft = 'auto';
-          element.style.marginRight = 'auto';
-        } else if (tag === 'h3') {
-          element.style.fontSize = '1.4em';
-          element.style.fontWeight = 'normal';
-          element.style.textAlign = 'left';
-          element.style.margin = '1em 0';
-          element.style.padding = '0 0 0 0.5em';
-          element.style.borderLeft = '4px solid #07c160';
-          element.style.color = '#333333';
-        } else if (tag === 'h4') {
-          element.style.fontSize = '1.2em';
-          element.style.fontWeight = 'normal';
-          element.style.color = '#07c160';
-          element.style.margin = '1em 0';
+      // 保存原始渲染样式
+      const originalStyle = settings.renderStyle;
+      
+      // 临时切换到微信样式（如果当前不是）
+      if (originalStyle !== 'wechat') {
+        // 暂时改变DOM以适应微信样式
+        const previewElement = editorContent.parentElement;
+        if (previewElement) {
+          previewElement.classList.remove(originalStyle);
+          previewElement.classList.add('wechat');
         }
-      });
+      }
       
       // 微信特定处理：优化代码块和表格格式
-      const codeBlocks = contentClone.querySelectorAll('pre');
+      const codeBlocks = editorContent.querySelectorAll('pre');
+      const originalCodeStyles: Array<{element: HTMLElement, style: string}> = [];
+      
+      // 临时增强代码块样式
       codeBlocks.forEach((block) => {
-        (block as HTMLElement).style.backgroundColor = '#f8f8f8';
-        (block as HTMLElement).style.borderRadius = '5px';
-        (block as HTMLElement).style.padding = '10px';
-        (block as HTMLElement).style.border = '1px solid #e8e8e8';
-        (block as HTMLElement).style.margin = '10px 0';
+        originalCodeStyles.push({
+          element: block as HTMLElement,
+          style: block.getAttribute('style') || ''
+        });
+        
+        // 增加微信风格的边框和背景
+        block.setAttribute('style', 'background-color: #f8f8f8; border-radius: 5px; padding: 10px; border: 1px solid #e8e8e8; margin: 10px 0;');
       });
       
       // 处理表格，增加边框
-      const tables = contentClone.querySelectorAll('table');
+      const tables = editorContent.querySelectorAll('table');
+      const originalTableStyles: Array<{element: HTMLElement, style: string}> = [];
+      
       tables.forEach((table) => {
-        (table as HTMLElement).style.borderCollapse = 'collapse';
-        (table as HTMLElement).style.width = '100%';
-        (table as HTMLElement).style.margin = '15px 0';
+        originalTableStyles.push({
+          element: table as HTMLElement,
+          style: table.getAttribute('style') || ''
+        });
+        
+        // 增加微信风格的表格样式
+        table.setAttribute('style', 'border-collapse: collapse; width: 100%; margin: 15px 0;');
         
         // 处理表格单元格
         const cells = table.querySelectorAll('th, td');
         cells.forEach((cell) => {
-          (cell as HTMLElement).style.border = '1px solid #d9d9d9';
-          (cell as HTMLElement).style.padding = '8px';
-          (cell as HTMLElement).style.textAlign = 'left';
+          const originalCellStyle = cell.getAttribute('style') || '';
+          cell.setAttribute('data-original-style', originalCellStyle);
+          cell.setAttribute('style', 'border: 1px solid #d9d9d9; padding: 8px; text-align: left;');
         });
       });
       
-      // 处理引用块
-      const blockquotes = contentClone.querySelectorAll('blockquote');
-      blockquotes.forEach((blockquote) => {
-        (blockquote as HTMLElement).style.margin = '1em 0';
-        (blockquote as HTMLElement).style.padding = '5px 1em';
-        (blockquote as HTMLElement).style.backgroundColor = '#f7f7f7';
-        (blockquote as HTMLElement).style.borderLeft = '4px solid #07c160';
-        (blockquote as HTMLElement).style.color = '#8b8b8b';
-      });
-      
-      // 处理链接
-      const links = contentClone.querySelectorAll('a');
-      links.forEach((link) => {
-        (link as HTMLElement).style.color = '#07c160';
-        (link as HTMLElement).style.textDecoration = 'none';
-      });
-      
-      // 处理图片
-      const images = contentClone.querySelectorAll('img');
-      images.forEach((image) => {
-        (image as HTMLElement).style.maxWidth = '100%';
-        (image as HTMLElement).style.display = 'block';
-        (image as HTMLElement).style.margin = '1.5em auto';
-        (image as HTMLElement).style.borderRadius = '5px';
-      });
-      
-      // 获取完整的HTML
-      const htmlContent = contentClone.innerHTML;
-      
-      // 尝试使用现代Clipboard API (支持Firefox)
-      if (navigator.clipboard && navigator.clipboard.write) {
-        try {
-          const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-          const textBlob = new Blob([contentClone.textContent || ''], { type: 'text/plain' });
-          
-          const clipboardItem = new (window as any).ClipboardItem({
-            'text/html': htmlBlob,
-            'text/plain': textBlob
-          });
-          
-          await navigator.clipboard.write([clipboardItem]);
-          message.success(t(locale, 'copyToWechatSuccess'));
-        } catch (clipboardError) {
-          // 如果现代API失败，回退到旧方法
-          fallbackCopy(htmlContent);
-        }
-      } else {
-        // 回退到旧方法
-        fallbackCopy(htmlContent);
+      // 针对火狐浏览器的特殊处理
+      if (isFirefox) {
+        // 为所有标题应用内联样式
+        const h1Elements = editorContent.querySelectorAll('h1');
+        h1Elements.forEach(h1 => {
+          h1.setAttribute('style', 'font-size: 2em; font-weight: bold; text-align: center; margin: 1em 0; padding: 0; border: none; color: #333;');
+        });
+        
+        const h2Elements = editorContent.querySelectorAll('h2');
+        h2Elements.forEach(h2 => {
+          h2.setAttribute('style', 'font-size: 1.6em; font-weight: normal; text-align: center; margin: 1.2em auto; padding: 0 1em 0.5em; display: inline-block; border-bottom: 2px solid ' + settings.renderColor + '; color: #333;');
+        });
+        
+        const h3Elements = editorContent.querySelectorAll('h3');
+        h3Elements.forEach(h3 => {
+          h3.setAttribute('style', 'font-size: 1.4em; font-weight: normal; text-align: left; margin: 1em 0; padding: 0 0 0 0.5em; border-left: 4px solid ' + settings.renderColor + '; color: #333;');
+        });
+        
+        const h4Elements = editorContent.querySelectorAll('h4');
+        h4Elements.forEach(h4 => {
+          h4.setAttribute('style', 'font-size: 1.2em; font-weight: normal; color: ' + settings.renderColor + '; margin: 1em 0; padding: 0; border: none;');
+        });
+        
+        // 应用段落样式
+        const paragraphs = editorContent.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          p.setAttribute('style', 'margin: 1.2em 0; color: #333;');
+        });
+        
+        // 分割线样式
+        const hrs = editorContent.querySelectorAll('hr');
+        hrs.forEach(hr => {
+          const hrDiv = document.createElement('div');
+          hrDiv.innerHTML = `<div style="border-top: 1px solid #e8e8e8; margin: 20px 0;"></div>`;
+          hr.parentNode?.replaceChild(hrDiv.firstChild as Node, hr);
+        });
       }
       
+      // 创建一个临时的选区
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(editorContent);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      
+      // 执行复制命令
+      document.execCommand('copy');
+      
+      // 清除选区
+      selection?.removeAllRanges();
+
+      // 恢复原始代码块样式
+      originalCodeStyles.forEach((item) => {
+        item.element.setAttribute('style', item.style);
+      });
+      
+      // 恢复原始表格样式
+      originalTableStyles.forEach((item) => {
+        item.element.setAttribute('style', item.style);
+      });
+      
+      // 恢复表格单元格样式
+      const allCells = editorContent.querySelectorAll('th, td');
+      allCells.forEach((cell) => {
+        const originalStyle = cell.getAttribute('data-original-style');
+        if (originalStyle !== null) {
+          cell.setAttribute('style', originalStyle);
+          cell.removeAttribute('data-original-style');
+        }
+      });
+
+      // 恢复原始样式（如果做了临时更改）
+      if (originalStyle !== 'wechat') {
+        const previewElement = editorContent.parentElement;
+        if (previewElement) {
+          previewElement.classList.remove('wechat');
+          previewElement.classList.add(originalStyle);
+        }
+      }
+      
+      // 如果是火狐浏览器，移除特殊样式
+      if (isFirefox) {
+        const headings = editorContent.querySelectorAll('h1, h2, h3, h4');
+        headings.forEach(heading => {
+          heading.removeAttribute('style');
+        });
+        
+        const paragraphs = editorContent.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          p.removeAttribute('style');
+        });
+      }
+      
+      message.success(t(locale, 'copyToWechatSuccess'));
     } catch (err) {
-      console.error('Copy to WeChat failed:', err);
       message.error(t(locale, 'copyToWechatError'));
     }
   };
